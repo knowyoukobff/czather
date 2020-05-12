@@ -53,6 +53,7 @@
             this.button2.TabIndex = 10;
             this.button2.Text = "Polacz";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
@@ -63,6 +64,7 @@
             this.button1.TabIndex = 9;
             this.button1.Text = "Wyslij";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // textBox3
             // 
@@ -78,6 +80,7 @@
             this.textBox2.ReadOnly = true;
             this.textBox2.Size = new System.Drawing.Size(207, 20);
             this.textBox2.TabIndex = 7;
+            this.textBox2.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox2_KeyUp_1);
             // 
             // textBox1
             // 

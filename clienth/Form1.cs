@@ -15,12 +15,14 @@ namespace clienth
         public Form1()
         {
             InitializeComponent();
-
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-
+            byte[] outStream = Encoding.ASCII.GetBytes(textBox2.Text + "$");
+            stm.Write(outStream, 0, outStream.Length);
+            stm.Flush();
+            textBox2.Text = "";
         }
 
         private void getMessage()
@@ -47,8 +49,23 @@ namespace clienth
 
             }
         }
-        private void button2_Click_1(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
+            readData = "Polaczony z serwerem";
+            msg();
+            client.Connect("127.0.0.1", 8880);
+            stm = client.GetStream();
+
+            byte[] outStream = Encoding.ASCII.GetBytes(textBox3.Text + "$");
+            stm.Write(outStream, 0, outStream.Length);
+            stm.Flush();
+            Thread ctThread = new Thread(getMessage);
+            ctThread.Start();       
+                textBox2.ReadOnly = false;
+                textBox3.ReadOnly = true;
+                label1.Text = "Twoj nick:";
+                button2.Enabled = false;
+                button1.Enabled = true;
 
         }
 
@@ -61,9 +78,12 @@ namespace clienth
                 textBox1.Text = textBox1.Text + Environment.NewLine + readData;
         }
 
-        private void textBox2_KeyUp(object sender, KeyEventArgs e)
+        private void textBox2_KeyUp_1(object sender, KeyEventArgs e)
         {
-
+            if (e.KeyCode == Keys.Enter)
+            {
+                button1.PerformClick();
+            }
         }
     }
 }
