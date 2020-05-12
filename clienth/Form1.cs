@@ -80,7 +80,9 @@ namespace clienth
                 textBox3.Text = "Nick zajety";
                 textBox2.Text = "";
                 client.Close();
-                stm.Close();               
+                stm.Close();
+                client = new TcpClient();
+                flag = false;
             }
             else
             {               
