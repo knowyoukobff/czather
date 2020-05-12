@@ -19,10 +19,7 @@ namespace clienth
 
         private void button1_Click(object sender, EventArgs e)
         {
-            byte[] outStream = Encoding.ASCII.GetBytes(textBox2.Text + "$");
-            stm.Write(outStream, 0, outStream.Length);
-            stm.Flush();
-            textBox2.Text = "";
+            sendmsg();
         }
 
         private void getMessage()
@@ -77,12 +74,22 @@ namespace clienth
             else
                 textBox1.Text = textBox1.Text + Environment.NewLine + readData;
         }
+        private void sendmsg()
+        {
+            if (textBox2.Text != "")
+            {
+                byte[] outStream = Encoding.ASCII.GetBytes(textBox2.Text + "$");
+                stm.Write(outStream, 0, outStream.Length);
+                stm.Flush();
+                textBox2.Text = "";
+            }
+        }
 
         private void textBox2_KeyUp_1(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-            {
-                button1.PerformClick();
+            {               
+                    sendmsg();                
             }
         }
     }
