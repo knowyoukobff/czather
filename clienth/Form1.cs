@@ -11,7 +11,7 @@ namespace clienth
         TcpClient client = new TcpClient();
         NetworkStream stm = default(NetworkStream);
         string readData = null;
-        public bool flag = false;
+        public volatile bool flag=false;
         public Form1()
         {
             InitializeComponent();
@@ -21,15 +21,28 @@ namespace clienth
         {
             sendmsg();
         }
+        private void getMessage_sync()
+        {
 
+
+                stm = client.GetStream();
+                int buffSize = client.ReceiveBufferSize;
+                byte[] inStream = new byte[buffSize];
+                stm.Read(inStream, 0, buffSize);
+                string returndata = Encoding.ASCII.GetString(inStream);
+                returndata = returndata.Substring(0, returndata.IndexOf("$"));
+                readData = returndata;
+                if (returndata == "Ten nick jest zajety")
+                {
+                    flag = true;
+                }
+                msg();
+        }
         private void getMessage()
         {
 
             while (true)
-            {
-                flag = false;
-                if (flag == false)
-                {
+            {     
                     stm = client.GetStream();
                     int buffSize = client.ReceiveBufferSize;
                     byte[] inStream = new byte[buffSize];
@@ -42,8 +55,6 @@ namespace clienth
                         flag = true;
                     }
                     msg();
-                }
-
             }
         }
         private void button2_Click(object sender, EventArgs e)
@@ -56,13 +67,30 @@ namespace clienth
             byte[] outStream = Encoding.ASCII.GetBytes(textBox3.Text + "$");
             stm.Write(outStream, 0, outStream.Length);
             stm.Flush();
-            Thread ctThread = new Thread(getMessage);
-            ctThread.Start();       
-                textBox2.ReadOnly = false;
-                textBox3.ReadOnly = true;
-                label1.Text = "Twoj nick:";
-                button2.Enabled = false;
-                button1.Enabled = true;
+
+            getMessage_sync();
+
+            textBox2.ReadOnly = false;
+            textBox3.ReadOnly = true;
+            label1.Text = "Twoj nick:";
+            button2.Enabled = false;
+            button1.Enabled = true;
+            if (flag is true)
+            {
+                textBox2.ReadOnly = true;
+                textBox3.ReadOnly = false;
+                label1.Text = "Podaj nick:";
+                button2.Enabled = true;
+                button1.Enabled = false;
+                textBox3.Text = "Nick zajety";
+                textBox2.Text = "";
+            }
+            else
+            {               
+                Thread ctThread = new Thread(getMessage);
+                ctThread.Start();
+            }
+
 
         }
 
