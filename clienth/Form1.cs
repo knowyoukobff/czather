@@ -69,12 +69,7 @@ namespace clienth
             stm.Flush();
 
             getMessage_sync();
-
-            textBox2.ReadOnly = false;
-            textBox3.ReadOnly = true;
-            label1.Text = "Twoj nick:";
-            button2.Enabled = false;
-            button1.Enabled = true;
+         
             if (flag is true)
             {
                 textBox2.ReadOnly = true;
@@ -84,11 +79,18 @@ namespace clienth
                 button1.Enabled = false;
                 textBox3.Text = "Nick zajety";
                 textBox2.Text = "";
+                client.Close();
+                stm.Close();               
             }
             else
             {               
                 Thread ctThread = new Thread(getMessage);
                 ctThread.Start();
+                textBox2.ReadOnly = false;
+                textBox3.ReadOnly = true;
+                label1.Text = "Twoj nick:";
+                button2.Enabled = false;
+                button1.Enabled = true;
             }
 
 
