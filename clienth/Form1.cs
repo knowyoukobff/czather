@@ -62,6 +62,7 @@ namespace clienth
         {
             readData = "Polaczony z serwerem";
             msg();
+
             client.Connect("127.0.0.1", 8880);
             stm = client.GetStream();
 
