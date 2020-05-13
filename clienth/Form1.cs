@@ -10,8 +10,9 @@ namespace clienth
     {
         TcpClient client = new TcpClient();
         NetworkStream stm = default(NetworkStream);
+
         string readData = null;
-        public volatile bool flag=false;
+        public bool flag=false;
         public Form1()
         {
             InitializeComponent();
@@ -42,7 +43,7 @@ namespace clienth
         {
 
             while (true)
-            {     
+            {
                     stm = client.GetStream();
                     int buffSize = client.ReceiveBufferSize;
                     byte[] inStream = new byte[buffSize];
@@ -72,13 +73,8 @@ namespace clienth
          
             if (flag is true)
             {
-                textBox2.ReadOnly = true;
-                textBox3.ReadOnly = false;
-                label1.Text = "Podaj nick:";
-                button2.Enabled = true;
-                button1.Enabled = false;
-                textBox3.Text = "Nick zajety";
-                textBox2.Text = "";
+                textBox3.Text = "Nick zajety..Sprobuj ponownie";
+                textBox1.Text = "";
                 client.Close();
                 stm.Close();
                 client = new TcpClient();

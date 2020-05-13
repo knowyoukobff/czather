@@ -20,7 +20,7 @@ namespace serverh
             int counter = 0;
 
             serverSocket.Start();
-            Console.WriteLine("Chat Server Started ....");
+            Console.WriteLine("Serwer uruchomiony");
             counter = 0;
 
             while ((true))
@@ -62,13 +62,16 @@ namespace serverh
             foreach (DictionaryEntry Item in clientsList)
             {
                 TcpClient broadcastSocket;
+
                 broadcastSocket = (TcpClient)Item.Value;
                 NetworkStream broadcastStream = broadcastSocket.GetStream();
+
                 Byte[] broadcastBytes = null;
+                string time = DateTime.Now.ToString("HH:mm");
 
                 if (flag == true)
                 {
-                    broadcastBytes = Encoding.ASCII.GetBytes("[" + uName + "]: " + msg + "$");
+                    broadcastBytes = Encoding.ASCII.GetBytes("[" + uName + "] "+time + " : " + msg + "$");
                 }
                 else
                 {
@@ -78,8 +81,8 @@ namespace serverh
                 broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);
                 broadcastStream.Flush();
             }
-        }  //end broadcast function
-    }//end Main class
+        }  
+    }
 
 
     public class handleClinet
@@ -93,25 +96,25 @@ namespace serverh
             this.clientSocket = inClientSocket;
             this.clNo = clineNo;
             this.clientsList = cList;
-            Thread ctThread = new Thread(doChat);
+            Thread ctThread = new Thread(Chat);
             ctThread.Start();
         }
 
-        private void doChat()
+        private void Chat()
         {
-            int requestCount = 0;
+            int rCount = 0;
             while ((true))
             {
                 try
                 {
-                    requestCount = requestCount + 1;
+                    rCount = rCount + 1;
                     NetworkStream networkStream = clientSocket.GetStream();
                     byte[] bytesFrom = new byte[clientSocket.ReceiveBufferSize];
                     networkStream.Read(bytesFrom, 0, clientSocket.ReceiveBufferSize);
                     string dataFromClient = Encoding.ASCII.GetString(bytesFrom);
                     dataFromClient = dataFromClient.Substring(0, dataFromClient.IndexOf("$"));
                     Console.WriteLine("[" + clNo + "]: " + dataFromClient);
-                    string rCount = Convert.ToString(requestCount);
+                    string Count = Convert.ToString(rCount);
 
                     Program.broadcast(dataFromClient, clNo, true);
                 }
@@ -119,7 +122,7 @@ namespace serverh
                 {
                     Console.WriteLine(ex.ToString());
                 }
-            }//end while
-        }//end doChat
-    } //end class handleClinet
-}//end namespace
+            }
+        }
+    } 
+}
