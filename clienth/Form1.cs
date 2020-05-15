@@ -11,6 +11,7 @@ namespace clienth
         TcpClient client = new TcpClient();
         NetworkStream stm = default(NetworkStream);
 
+        string clntroom;
         string readData = null;
         public bool flag=false;
         public Form1()
@@ -38,8 +39,13 @@ namespace clienth
 
          int buffSize = client.ReceiveBufferSize;
          byte[] inStream = new byte[buffSize];
+         byte[] bytesMsg = new byte[client.ReceiveBufferSize - 1];
          stm.Read(inStream, 0, buffSize);
-         string returndata = Encoding.ASCII.GetString(inStream);
+        for (int i = 0; i < bytesMsg.Length; i++)
+         {
+           bytesMsg[i] = inStream[i + 1];
+         }
+         string returndata = Encoding.ASCII.GetString(bytesMsg);
          returndata = returndata.Substring(0, returndata.IndexOf("$"));
          if (returndata == "Ten nick jest zajety")
          {
@@ -62,26 +68,41 @@ namespace clienth
 
              int buffSize = client.ReceiveBufferSize;
              byte[] inStream = new byte[buffSize];
-
              stm.Read(inStream, 0, buffSize);
 
-             string returndata = Encoding.ASCII.GetString(inStream);
-             returndata = returndata.Substring(0, returndata.IndexOf("$"));
-             if (returndata == "Ten nick jest zajety")
+             byte[] bytesMsg = new byte[client.ReceiveBufferSize - 1];
+             byte[] bytesIdRoom = new byte[1];
+
+             bytesIdRoom[0] = inStream[0];
+             for (int i = 0; i < bytesMsg.Length; i++)
+             {
+                    bytesMsg[i] = inStream[i + 1];
+             }
+             string getMsg = Encoding.ASCII.GetString(bytesMsg);
+             string idRoom = Encoding.ASCII.GetString(bytesIdRoom);
+                getMsg = getMsg.Substring(0, getMsg.IndexOf("$"));
+             if (getMsg == "Ten nick jest zajety")
              {
                flag = true;
              }
-             readData = returndata;
-             msg();            
-            }
+             if (clntroom == idRoom)
+             {
+                readData = getMsg;
+             }
+            else
+             {
+                 readData = "";
+             }
+                msg();            
+              }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {           
             client.Connect("127.0.0.1", 8880);
             stm = client.GetStream();
-
-            byte[] outStream = Encoding.ASCII.GetBytes(textBox3.Text + "$");
+            clntroom = idroom.Text;
+            byte[] outStream = Encoding.ASCII.GetBytes(idroom.Text + textBox3.Text + "$");
             stm.Write(outStream, 0, outStream.Length);
             stm.Flush();
 
@@ -102,12 +123,11 @@ namespace clienth
                 ctThread.Start();
                 textBox2.ReadOnly = false;
                 textBox3.ReadOnly = true;
+                idroom.ReadOnly = true;
                 label1.Text = "Twoj nick:";
                 button2.Enabled = false;
                 button1.Enabled = true;
             }
-
-
         }
 
         private void msg()
@@ -116,7 +136,16 @@ namespace clienth
             if (this.InvokeRequired)
                 this.Invoke(new MethodInvoker(msg));
             else
-                textBox1.Text = textBox1.Text + Environment.NewLine + readData;
+            {
+                if (readData == "")
+                {
+                    textBox1.Text += readData;
+                }
+                else
+                {
+                    textBox1.Text = textBox1.Text + Environment.NewLine + readData;
+                }
+            }
         }
 
         private void sendmsg()

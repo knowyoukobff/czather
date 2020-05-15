@@ -30,34 +30,42 @@ namespace serverh
                 clientSocket = serverSocket.AcceptTcpClient();
                 NetworkStream networkStream = clientSocket.GetStream();
                 byte[] bytesFrom = new byte[clientSocket.ReceiveBufferSize];
+                byte[] bytesClientName = new byte[clientSocket.ReceiveBufferSize-1];
+                byte[] bytesIdRoom = new byte[1];
                 networkStream.Read(bytesFrom, 0, clientSocket.ReceiveBufferSize);
-                string dataFromClient = Encoding.ASCII.GetString(bytesFrom);
-                dataFromClient = dataFromClient.Substring(0, dataFromClient.IndexOf("$"));
+                bytesIdRoom[0] = bytesFrom[0];
+                for(int i=0;i< bytesClientName.Length;i++)
+                {
+                    bytesClientName[i] = bytesFrom[i + 1];
+                }
+                string IdRoom = Encoding.ASCII.GetString(bytesIdRoom);
+                string ClientName = Encoding.ASCII.GetString(bytesClientName);
+                ClientName = ClientName.Substring(0, ClientName.IndexOf("$"));
                 try
                 {
-                    clientsList.Add(dataFromClient, clientSocket);
+                    clientsList.Add(ClientName, clientSocket);
                 }
                 catch
                 {
                     Stream str = clientSocket.GetStream();
                     Byte[] error = null;
-                    error = Encoding.ASCII.GetBytes("Ten nick jest zajety$");
+                    error = Encoding.ASCII.GetBytes("eTen nick jest zajety$");
                     str.Write(error, 0, error.Length);
                     str.Flush();
                     flg = true;
                 }
                 if (flg == false)
                 {
-                    broadcast("[" + dataFromClient + "] dolaczyl do czatu$", dataFromClient, false);
-                    Console.WriteLine("[" + dataFromClient + "] dolaczyl do chatu");
+                    broadcast("[" + ClientName + "] dolaczyl do czatu$", ClientName, IdRoom, false);
+                    Console.WriteLine("[" + ClientName + "] dolaczyl do chatu");
                     handleClinet client = new handleClinet();
-                    client.startClient(clientSocket, dataFromClient, clientsList);
+                    client.startClient(clientSocket, ClientName, clientsList, IdRoom);
                 }
             }
 
         }
 
-        public static void broadcast(string msg, string uName, bool flag)
+        public static void broadcast(string msg, string uName,string IdRoom, bool flag)
         {
             foreach (DictionaryEntry Item in clientsList)
             {
@@ -71,11 +79,11 @@ namespace serverh
 
                 if (flag == true)
                 {
-                    broadcastBytes = Encoding.ASCII.GetBytes("[" + uName + "] "+time + " : " + msg + "$");
+                    broadcastBytes = Encoding.ASCII.GetBytes(IdRoom+"[" + uName + "] "+time + " : " + msg + "$");
                 }
                 else
                 {
-                    broadcastBytes = Encoding.ASCII.GetBytes(msg);
+                    broadcastBytes = Encoding.ASCII.GetBytes(IdRoom+msg);
                 }
 
                 broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);
@@ -90,12 +98,14 @@ namespace serverh
         TcpClient clientSocket;
         string clNo;
         Hashtable clientsList;
+        string IdRm;
 
-        public void startClient(TcpClient inClientSocket, string clineNo, Hashtable cList)
+        public void startClient(TcpClient inClientSocket, string clineNo, Hashtable cList,string IdRoom)
         {
             this.clientSocket = inClientSocket;
             this.clNo = clineNo;
             this.clientsList = cList;
+            this.IdRm = IdRoom;
             Thread ctThread = new Thread(Chat);
             ctThread.Start();
         }
@@ -116,7 +126,7 @@ namespace serverh
                     Console.WriteLine("[" + clNo + "]: " + dataFromClient);
                     string Count = Convert.ToString(rCount);
 
-                    Program.broadcast(dataFromClient, clNo, true);
+                    Program.broadcast(dataFromClient, clNo, IdRm, true);
                 }
                 catch (Exception ex)
                 {
