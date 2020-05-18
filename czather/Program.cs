@@ -17,16 +17,13 @@ namespace serverh
             IPAddress ip = IPAddress.Parse("127.0.0.1");
             TcpListener serverSocket = new TcpListener(ip, 8880);
             TcpClient clientSocket = default(TcpClient);
-            int counter = 0;
 
             serverSocket.Start();
             Console.WriteLine("Serwer uruchomiony");
-            counter = 0;
-
+            
             while ((true))
             {
                 flg = false;
-                counter += 1;
                 clientSocket = serverSocket.AcceptTcpClient();
                 NetworkStream networkStream = clientSocket.GetStream();
                 byte[] bytesFrom = new byte[clientSocket.ReceiveBufferSize];
@@ -48,16 +45,16 @@ namespace serverh
                 catch
                 {
                     Stream str = clientSocket.GetStream();
-                    Byte[] error = null;
-                    error = Encoding.ASCII.GetBytes("eTen nick jest zajety$");
-                    str.Write(error, 0, error.Length);
+                    Byte[] takenNick = null;
+                    takenNick = Encoding.ASCII.GetBytes(" Ten nick jest zajety$");
+                    str.Write(takenNick, 0, takenNick.Length);
                     str.Flush();
                     flg = true;
                 }
                 if (flg == false)
                 {
                     broadcast("[" + ClientName + "] dolaczyl do czatu$", ClientName, IdRoom, false);
-                    Console.WriteLine("[" + ClientName + "] dolaczyl do chatu");
+                    Console.WriteLine("[" + ClientName + "][Pokoj:"+ IdRoom + "] dolaczyl do chatu");
                     handleClinet client = new handleClinet();
                     client.startClient(clientSocket, ClientName, clientsList, IdRoom);
                 }
@@ -65,7 +62,7 @@ namespace serverh
 
         }
 
-        public static void broadcast(string msg, string uName,string IdRoom, bool flag)
+        public static void broadcast(string msg, string uName, string IdRoom, bool flag)
         {
             foreach (DictionaryEntry Item in clientsList)
             {
@@ -96,14 +93,14 @@ namespace serverh
     public class handleClinet
     {
         TcpClient clientSocket;
-        string clNo;
+        string clientName;
         Hashtable clientsList;
         string IdRm;
 
-        public void startClient(TcpClient inClientSocket, string clineNo, Hashtable cList,string IdRoom)
+        public void startClient(TcpClient inClientSocket, string clineNo, Hashtable cList, string IdRoom)
         {
             this.clientSocket = inClientSocket;
-            this.clNo = clineNo;
+            this.clientName = clineNo;
             this.clientsList = cList;
             this.IdRm = IdRoom;
             Thread ctThread = new Thread(Chat);
@@ -112,21 +109,18 @@ namespace serverh
 
         private void Chat()
         {
-            int rCount = 0;
             while ((true))
             {
                 try
                 {
-                    rCount = rCount + 1;
                     NetworkStream networkStream = clientSocket.GetStream();
                     byte[] bytesFrom = new byte[clientSocket.ReceiveBufferSize];
                     networkStream.Read(bytesFrom, 0, clientSocket.ReceiveBufferSize);
                     string dataFromClient = Encoding.ASCII.GetString(bytesFrom);
                     dataFromClient = dataFromClient.Substring(0, dataFromClient.IndexOf("$"));
-                    Console.WriteLine("[" + clNo + "]: " + dataFromClient);
-                    string Count = Convert.ToString(rCount);
+                    Console.WriteLine("[" + clientName + "][Pokoj:"+IdRm+"]: " + dataFromClient);
 
-                    Program.broadcast(dataFromClient, clNo, IdRm, true);
+                    Program.broadcast(dataFromClient, clientName, IdRm, true);
                 }
                 catch (Exception ex)
                 {

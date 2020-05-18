@@ -1,6 +1,6 @@
 ﻿namespace clienth
 {
-    partial class Form1
+    partial class Form
     {
         /// <summary>
         /// Wymagana zmienna projektanta.
@@ -36,6 +36,7 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.idroom = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.idroom)).BeginInit();
             this.SuspendLayout();
             // 
@@ -121,11 +122,23 @@
             this.label2.TabIndex = 14;
             this.label2.Text = "Wybierz pokoj:";
             // 
-            // Form1
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(269, 13);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(79, 17);
+            this.checkBox1.TabIndex = 15;
+            this.checkBox1.Text = "Tryb nocny";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(392, 333);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.idroom);
             this.Controls.Add(this.label1);
@@ -134,8 +147,8 @@
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "Form";
+            this.Text = "Chater";
             ((System.ComponentModel.ISupportInitialize)(this.idroom)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -152,6 +165,7 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.NumericUpDown idroom;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 
