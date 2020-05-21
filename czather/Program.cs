@@ -17,109 +17,116 @@ namespace serverh
             IPAddress ip = IPAddress.Parse("127.0.0.1");
             TcpListener serverSocket = new TcpListener(ip, 8880);
             TcpClient clientSocket = default(TcpClient);
-            int counter = 0;
 
             serverSocket.Start();
-            Console.WriteLine("Chat Server Started ....");
-            counter = 0;
-
+            Console.WriteLine("Serwer uruchomiony");
+            
             while ((true))
             {
                 flg = false;
-                counter += 1;
                 clientSocket = serverSocket.AcceptTcpClient();
                 NetworkStream networkStream = clientSocket.GetStream();
                 byte[] bytesFrom = new byte[clientSocket.ReceiveBufferSize];
+                byte[] bytesClientName = new byte[clientSocket.ReceiveBufferSize-1];
+                byte[] bytesIdRoom = new byte[1];
                 networkStream.Read(bytesFrom, 0, clientSocket.ReceiveBufferSize);
-                string dataFromClient = Encoding.ASCII.GetString(bytesFrom);
-                dataFromClient = dataFromClient.Substring(0, dataFromClient.IndexOf("$"));
+                bytesIdRoom[0] = bytesFrom[0];
+                for(int i=0;i< bytesClientName.Length;i++)
+                {
+                    bytesClientName[i] = bytesFrom[i + 1];
+                }
+                string IdRoom = Encoding.ASCII.GetString(bytesIdRoom);
+                string ClientName = Encoding.ASCII.GetString(bytesClientName);
+                ClientName = ClientName.Substring(0, ClientName.IndexOf("$"));
                 try
                 {
-                    clientsList.Add(dataFromClient, clientSocket);
+                    clientsList.Add(ClientName, clientSocket);
                 }
                 catch
                 {
                     Stream str = clientSocket.GetStream();
-                    Byte[] error = null;
-                    error = Encoding.ASCII.GetBytes("Ten nick jest zajety$");
-                    str.Write(error, 0, error.Length);
+                    Byte[] takenNick = null;
+                    takenNick = Encoding.ASCII.GetBytes(" Ten nick jest zajety$");
+                    str.Write(takenNick, 0, takenNick.Length);
                     str.Flush();
                     flg = true;
                 }
                 if (flg == false)
                 {
-                    broadcast("[" + dataFromClient + "] dolaczyl do czatu$", dataFromClient, false);
-                    Console.WriteLine("[" + dataFromClient + "] dolaczyl do chatu");
+                    broadcast("[" + ClientName + "] dolaczyl do czatu$", ClientName, IdRoom, false);
+                    Console.WriteLine("[" + ClientName + "][Pokoj:"+ IdRoom + "] dolaczyl do chatu");
                     handleClinet client = new handleClinet();
-                    client.startClient(clientSocket, dataFromClient, clientsList);
+                    client.startClient(clientSocket, ClientName, clientsList, IdRoom);
                 }
             }
 
         }
 
-        public static void broadcast(string msg, string uName, bool flag)
+        public static void broadcast(string msg, string uName, string IdRoom, bool flag)
         {
             foreach (DictionaryEntry Item in clientsList)
             {
                 TcpClient broadcastSocket;
+
                 broadcastSocket = (TcpClient)Item.Value;
                 NetworkStream broadcastStream = broadcastSocket.GetStream();
+
                 Byte[] broadcastBytes = null;
+                string time = DateTime.Now.ToString("HH:mm");
 
                 if (flag == true)
                 {
-                    broadcastBytes = Encoding.ASCII.GetBytes("[" + uName + "]: " + msg + "$");
+                    broadcastBytes = Encoding.ASCII.GetBytes(IdRoom+"[" + uName + "] "+time + " : " + msg + "$");
                 }
                 else
                 {
-                    broadcastBytes = Encoding.ASCII.GetBytes(msg);
+                    broadcastBytes = Encoding.ASCII.GetBytes(IdRoom+msg);
                 }
 
                 broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);
                 broadcastStream.Flush();
             }
-        }  //end broadcast function
-    }//end Main class
+        }  
+    }
 
 
     public class handleClinet
     {
         TcpClient clientSocket;
-        string clNo;
+        string clientName;
         Hashtable clientsList;
+        string IdRm;
 
-        public void startClient(TcpClient inClientSocket, string clineNo, Hashtable cList)
+        public void startClient(TcpClient inClientSocket, string clineNo, Hashtable cList, string IdRoom)
         {
             this.clientSocket = inClientSocket;
-            this.clNo = clineNo;
+            this.clientName = clineNo;
             this.clientsList = cList;
-            Thread ctThread = new Thread(doChat);
+            this.IdRm = IdRoom;
+            Thread ctThread = new Thread(Chat);
             ctThread.Start();
         }
 
-        private void doChat()
+        private void Chat()
         {
-            int requestCount = 0;
             while ((true))
             {
                 try
                 {
-                    requestCount = requestCount + 1;
                     NetworkStream networkStream = clientSocket.GetStream();
                     byte[] bytesFrom = new byte[clientSocket.ReceiveBufferSize];
                     networkStream.Read(bytesFrom, 0, clientSocket.ReceiveBufferSize);
                     string dataFromClient = Encoding.ASCII.GetString(bytesFrom);
                     dataFromClient = dataFromClient.Substring(0, dataFromClient.IndexOf("$"));
-                    Console.WriteLine("[" + clNo + "]: " + dataFromClient);
-                    string rCount = Convert.ToString(requestCount);
+                    Console.WriteLine("[" + clientName + "][Pokoj:"+IdRm+"]: " + dataFromClient);
 
-                    Program.broadcast(dataFromClient, clNo, true);
+                    Program.broadcast(dataFromClient, clientName, IdRm, true);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
                 }
-            }//end while
-        }//end doChat
-    } //end class handleClinet
-}//end namespace
+            }
+        }
+    } 
+}
