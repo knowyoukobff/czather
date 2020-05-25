@@ -11,6 +11,7 @@ namespace serverh
     class Program
     {
         public static Hashtable clientsList = new Hashtable();
+        public static Hashtable roomList = new Hashtable();
         public static bool flg;
         static void Main(string[] args)
         {
@@ -53,6 +54,14 @@ namespace serverh
                 }
                 if (flg == false)
                 {
+                    if (roomList.ContainsKey(IdRoom))
+                    {
+                        roomList[IdRoom] += ClientName + "\r\n";
+                    }
+                    else
+                    {
+                        roomList.Add(IdRoom, ClientName + "\r\n");
+                    }
                     broadcast("[" + ClientName + "] dolaczyl do czatu$", ClientName, IdRoom, false);
                     Console.WriteLine("[" + ClientName + "][Pokoj:"+ IdRoom + "] dolaczyl do chatu");
                     handleClinet client = new handleClinet();
@@ -76,11 +85,11 @@ namespace serverh
 
                 if (flag == true)
                 {
-                    broadcastBytes = Encoding.ASCII.GetBytes(IdRoom+"[" + uName + "] "+time + " : " + msg + "$");
+                    broadcastBytes = Encoding.ASCII.GetBytes(IdRoom+"[" + uName + "] "+time + " : " + msg + "$" + roomList[IdRoom]);
                 }
                 else
                 {
-                    broadcastBytes = Encoding.ASCII.GetBytes(IdRoom+msg);
+                    broadcastBytes = Encoding.ASCII.GetBytes(IdRoom+msg + "$" + roomList[IdRoom]);
                 }
 
                 broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);
