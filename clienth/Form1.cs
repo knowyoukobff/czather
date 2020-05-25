@@ -71,6 +71,7 @@ namespace clienth
                 textBox1.ForeColor = white;
                 textBox4.BackColor = grey;
                 textBox4.ForeColor = white;
+                label3.ForeColor = white;
             }
         }
 
@@ -88,6 +89,7 @@ namespace clienth
                 textBox1.BackColor = white;
                 textBox4.BackColor = white;
                 textBox4.ForeColor = black;
+                label3.ForeColor = black;
             }
         }
 
