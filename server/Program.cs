@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections;
 using System.Net;
 using System.IO;
+using System.ComponentModel;
 
 namespace serverh
 {
@@ -21,18 +22,18 @@ namespace serverh
 
             serverSocket.Start();
             Console.WriteLine("Serwer uruchomiony");
-            
+
             while ((true))
             {
                 flg = false;
                 clientSocket = serverSocket.AcceptTcpClient();
                 NetworkStream networkStream = clientSocket.GetStream();
                 byte[] bytesFrom = new byte[clientSocket.ReceiveBufferSize];
-                byte[] bytesClientName = new byte[clientSocket.ReceiveBufferSize-1];
+                byte[] bytesClientName = new byte[clientSocket.ReceiveBufferSize - 1];
                 byte[] bytesIdRoom = new byte[1];
                 networkStream.Read(bytesFrom, 0, clientSocket.ReceiveBufferSize);
                 bytesIdRoom[0] = bytesFrom[0];
-                for(int i=0;i< bytesClientName.Length;i++)
+                for (int i = 0; i < bytesClientName.Length; i++)
                 {
                     bytesClientName[i] = bytesFrom[i + 1];
                 }
@@ -54,16 +55,9 @@ namespace serverh
                 }
                 if (flg == false)
                 {
-                    if (roomList.ContainsKey(IdRoom))
-                    {
-                        roomList[IdRoom] += ClientName + "\r\n";
-                    }
-                    else
-                    {
-                        roomList.Add(IdRoom, ClientName + "\r\n");
-                    }
+                    roomList.Add(ClientName, IdRoom);
                     broadcast("[" + ClientName + "] dolaczyl do czatu$", ClientName, IdRoom, false);
-                    Console.WriteLine("[" + ClientName + "][Pokoj:"+ IdRoom + "] dolaczyl do chatu");
+                    Console.WriteLine("[" + ClientName + "][Pokoj:" + IdRoom + "] dolaczyl do chatu");
                     handleClinet client = new handleClinet();
                     client.startClient(clientSocket, ClientName, clientsList, IdRoom);
                 }
@@ -79,23 +73,32 @@ namespace serverh
 
                 broadcastSocket = (TcpClient)Item.Value;
                 NetworkStream broadcastStream = broadcastSocket.GetStream();
-
                 Byte[] broadcastBytes = null;
                 string time = DateTime.Now.ToString("HH:mm");
+                string sendingList = "";
+
+                foreach (DictionaryEntry item in roomList)
+                {
+
+                    if ((string)item.Value==IdRoom)
+                    {
+                        sendingList += item.Key+"\r\n";
+                    }
+                }
 
                 if (flag == true)
                 {
-                    broadcastBytes = Encoding.ASCII.GetBytes(IdRoom+"[" + uName + "] "+time + " : " + msg + "$" + roomList[IdRoom]);
+                    broadcastBytes = Encoding.ASCII.GetBytes(IdRoom + "[" + uName + "] " + time + " : " + msg + "$" + sendingList);
                 }
                 else
                 {
-                    broadcastBytes = Encoding.ASCII.GetBytes(IdRoom+msg + "$" + roomList[IdRoom]);
+                    broadcastBytes = Encoding.ASCII.GetBytes(IdRoom + msg + "$" + sendingList);
                 }
 
                 broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);
                 broadcastStream.Flush();
             }
-        }  
+        }
     }
 
 
@@ -105,6 +108,7 @@ namespace serverh
         string clientName;
         Hashtable clientsList;
         string IdRm;
+        Thread ctThread;
 
         public void startClient(TcpClient inClientSocket, string clineNo, Hashtable cList, string IdRoom)
         {
@@ -112,7 +116,7 @@ namespace serverh
             this.clientName = clineNo;
             this.clientsList = cList;
             this.IdRm = IdRoom;
-            Thread ctThread = new Thread(Chat);
+            ctThread = new Thread(Chat);
             ctThread.Start();
         }
 
@@ -127,15 +131,19 @@ namespace serverh
                     networkStream.Read(bytesFrom, 0, clientSocket.ReceiveBufferSize);
                     string dataFromClient = Encoding.ASCII.GetString(bytesFrom);
                     dataFromClient = dataFromClient.Substring(0, dataFromClient.IndexOf("$"));
-                    Console.WriteLine("[" + clientName + "][Pokoj:"+IdRm+"]: " + dataFromClient);
+                    Console.WriteLine("[" + clientName + "][Pokoj:" + IdRm + "]: " + dataFromClient);
 
                     Program.broadcast(dataFromClient, clientName, IdRm, true);
                 }
-                catch (Exception ex)
+                catch 
                 {
-                    Console.WriteLine(ex.ToString());
+                    Console.WriteLine("Rozlaczono uzytkownika " + clientName);
+                    Program.roomList.Remove(clientName);
+                    Program.clientsList.Remove(clientName);
+                    Program.broadcast("Uzytkownik [" + clientName + "] opuscil pokoj", clientName, IdRm, false);
+                    ctThread.Abort();
                 }
             }
         }
-    } 
+    }
 }

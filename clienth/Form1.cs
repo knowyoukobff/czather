@@ -239,5 +239,11 @@ namespace clienth
                 textBox2.Text = "";
             }
         }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+                textBox1.SelectionStart = textBox1.Text.Length;
+                textBox1.ScrollToCaret();
+        }
     }
 }
