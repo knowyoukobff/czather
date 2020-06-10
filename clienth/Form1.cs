@@ -24,8 +24,6 @@ namespace clienth
         public Form()
         {
             InitializeComponent();
-            Thread nightMd = new Thread(nightMode);
-            nightMd.Start();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -42,27 +40,8 @@ namespace clienth
             }       
         }
 
-        public void nightMode()
+        public void changeToNightmode()
         {
-            while(true)
-            {
-                if(checkBox1.Checked)
-                {
-                    changeTonightmode();                    
-                }
-                else 
-                {
-                    changeTodaytmode();
-                }
-            }
-        }
-
-        public void changeTonightmode()
-        {
-            if (this.InvokeRequired)
-                 this.Invoke(new MethodInvoker(changeTonightmode));
-            else
-            {
                 BackColor = black;
                 checkBox1.ForeColor = white;
                 label1.ForeColor = white;
@@ -72,15 +51,10 @@ namespace clienth
                 textBox4.BackColor = grey;
                 textBox4.ForeColor = white;
                 label3.ForeColor = white;
-            }
         }
 
-        public void changeTodaytmode()
+        public void changeToDaytmode()
         {
-            if (this.InvokeRequired)
-                this.Invoke(new MethodInvoker(changeTodaytmode));
-            else
-            {
                 BackColor = white;
                 checkBox1.ForeColor = black;
                 label1.ForeColor = black;
@@ -90,7 +64,6 @@ namespace clienth
                 textBox4.BackColor = white;
                 textBox4.ForeColor = black;
                 label3.ForeColor = black;
-            }
         }
 
         private void getMessage_sync()
@@ -200,6 +173,7 @@ namespace clienth
                 {
                     Thread ctThread = new Thread(getMessage);
                     ctThread.Start();
+                    ctThread.IsBackground = true;
                     textBox2.ReadOnly = false;
                     textBox3.ReadOnly = true;
                     idroom.ReadOnly = true;
@@ -244,6 +218,19 @@ namespace clienth
         {
                 textBox1.SelectionStart = textBox1.Text.Length;
                 textBox1.ScrollToCaret();
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox check = sender as CheckBox;
+            if(check.Checked)
+            {
+                changeToNightmode();
+            }
+            else
+            {
+                changeToDaytmode();
+            }
         }
     }
 }
