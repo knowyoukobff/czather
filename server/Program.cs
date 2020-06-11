@@ -7,38 +7,43 @@ using System.Net;
 using System.IO;
 using System.ComponentModel;
 
-namespace serverh
+namespace server
 {
     class Program
     {
         public static Hashtable clientsList = new Hashtable();
         public static Hashtable roomList = new Hashtable();
-        public static bool flg;
+        public static bool flag;
         static void Main(string[] args)
         {
             IPAddress ip = IPAddress.Parse("127.0.0.1");
             TcpListener serverSocket = new TcpListener(ip, 8880);
-            TcpClient clientSocket = default(TcpClient);
+            TcpClient clientSocket = default;
 
             serverSocket.Start();
             Console.WriteLine("Serwer uruchomiony");
 
             while ((true))
             {
-                flg = false;
+                flag = false;
                 clientSocket = serverSocket.AcceptTcpClient();
                 NetworkStream networkStream = clientSocket.GetStream();
+
                 byte[] bytesFrom = new byte[clientSocket.ReceiveBufferSize];
                 byte[] bytesClientName = new byte[clientSocket.ReceiveBufferSize - 1];
                 byte[] bytesIdRoom = new byte[1];
+
                 networkStream.Read(bytesFrom, 0, clientSocket.ReceiveBufferSize);
                 bytesIdRoom[0] = bytesFrom[0];
+
                 for (int i = 0; i < bytesClientName.Length; i++)
                 {
                     bytesClientName[i] = bytesFrom[i + 1];
                 }
+
                 string IdRoom = Encoding.ASCII.GetString(bytesIdRoom);
                 string ClientName = Encoding.ASCII.GetString(bytesClientName);
+
                 ClientName = ClientName.Substring(0, ClientName.IndexOf("$"));
                 try
                 {
@@ -46,26 +51,28 @@ namespace serverh
                 }
                 catch
                 {
-                    Stream str = clientSocket.GetStream();
+                    Stream takenNickstream = clientSocket.GetStream();
                     Byte[] takenNick = null;
                     takenNick = Encoding.ASCII.GetBytes(" Ten nick jest zajety$");
-                    str.Write(takenNick, 0, takenNick.Length);
-                    str.Flush();
-                    flg = true;
+                    takenNickstream.Write(takenNick, 0, takenNick.Length);
+                    takenNickstream.Flush();
+                    flag = true;
                 }
-                if (flg == false)
+                if (flag == false)
                 {
                     roomList.Add(ClientName, IdRoom);
                     broadcast("[" + ClientName + "] dolaczyl do czatu$", ClientName, IdRoom, false);
+
                     Console.WriteLine("[" + ClientName + "][Pokoj:" + IdRoom + "] dolaczyl do chatu");
-                    handleClinet client = new handleClinet();
-                    client.startClient(clientSocket, ClientName, clientsList, IdRoom);
+
+                    HandleClinet client = new HandleClinet();
+                    client.StartClient(clientSocket, ClientName, clientsList, IdRoom);
                 }
             }
 
         }
 
-        public static void broadcast(string msg, string uName, string IdRoom, bool flag)
+        public static void broadcast(string msg, string uName, string IdRoom, bool flag_1)
         {
             foreach (DictionaryEntry Item in clientsList)
             {
@@ -86,7 +93,7 @@ namespace serverh
                     }
                 }
 
-                if (flag == true)
+                if (flag_1 == true)
                 {
                     broadcastBytes = Encoding.ASCII.GetBytes(IdRoom + "[" + uName + "] " + time + " : " + msg + "$" + sendingList);
                 }
@@ -102,7 +109,7 @@ namespace serverh
     }
 
 
-    public class handleClinet
+    public class HandleClinet
     {
         TcpClient clientSocket;
         string clientName;
@@ -110,7 +117,7 @@ namespace serverh
         string IdRm;
         Thread ctThread;
 
-        public void startClient(TcpClient inClientSocket, string clineNo, Hashtable cList, string IdRoom)
+        public void StartClient(TcpClient inClientSocket, string clineNo, Hashtable cList, string IdRoom)
         {
             this.clientSocket = inClientSocket;
             this.clientName = clineNo;

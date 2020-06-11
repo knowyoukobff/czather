@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.Connect_btn = new System.Windows.Forms.Button();
+            this.Send_btn = new System.Windows.Forms.Button();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -51,26 +51,26 @@
             this.label1.TabIndex = 11;
             this.label1.Text = "Podaj nick:";
             // 
-            // button2
+            // Connect_btn
             // 
-            this.button2.Location = new System.Drawing.Point(185, 58);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 20);
-            this.button2.TabIndex = 10;
-            this.button2.Text = "Polacz";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.Connect_btn.Location = new System.Drawing.Point(185, 58);
+            this.Connect_btn.Name = "Connect_btn";
+            this.Connect_btn.Size = new System.Drawing.Size(75, 20);
+            this.Connect_btn.TabIndex = 10;
+            this.Connect_btn.Text = "Polacz";
+            this.Connect_btn.UseVisualStyleBackColor = true;
+            this.Connect_btn.Click += new System.EventHandler(this.Connect_btn_Click);
             // 
-            // button1
+            // Send_btn
             // 
-            this.button1.Enabled = false;
-            this.button1.Location = new System.Drawing.Point(167, 276);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 9;
-            this.button1.Text = "Wyslij";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.Send_btn.Enabled = false;
+            this.Send_btn.Location = new System.Drawing.Point(167, 276);
+            this.Send_btn.Name = "Send_btn";
+            this.Send_btn.Size = new System.Drawing.Size(75, 23);
+            this.Send_btn.TabIndex = 9;
+            this.Send_btn.Text = "Wyslij";
+            this.Send_btn.UseVisualStyleBackColor = true;
+            this.Send_btn.Click += new System.EventHandler(this.Send_btn_Click);
             // 
             // textBox3
             // 
@@ -142,7 +142,7 @@
             this.textBox4.Multiline = true;
             this.textBox4.Name = "textBox4";
             this.textBox4.ReadOnly = true;
-            this.textBox4.Size = new System.Drawing.Size(167, 160);
+            this.textBox4.Size = new System.Drawing.Size(160, 160);
             this.textBox4.TabIndex = 16;
             // 
             // label3
@@ -159,18 +159,19 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(588, 333);
+            this.ClientSize = new System.Drawing.Size(580, 333);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.idroom);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.Connect_btn);
+            this.Controls.Add(this.Send_btn);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Name = "Form";
             this.Text = "Chater";
             ((System.ComponentModel.ISupportInitialize)(this.idroom)).EndInit();
@@ -182,8 +183,8 @@
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button Connect_btn;
+        private System.Windows.Forms.Button Send_btn;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.TextBox textBox1;

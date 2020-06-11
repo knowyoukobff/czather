@@ -10,7 +10,7 @@ namespace clienth
     public partial class Form : System.Windows.Forms.Form
     {
         TcpClient client = new TcpClient();
-        NetworkStream stm = default(NetworkStream);
+        NetworkStream stm = default;
 
         string clntroom;
         string readData = null;
@@ -26,9 +26,9 @@ namespace clienth
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Send_btn_Click(object sender, EventArgs e)
         {
-            sendmsg();
+            Sendmsg();
         }
 
         private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
@@ -36,11 +36,11 @@ namespace clienth
             if (e.KeyChar == (char)Keys.Enter)
             {
                 e.Handled = true;
-                sendmsg();
+                Sendmsg();
             }       
         }
 
-        public void changeToNightmode()
+        public void ChangeToNightmode()
         {
                 BackColor = black;
                 checkBox1.ForeColor = white;
@@ -53,7 +53,7 @@ namespace clienth
                 label3.ForeColor = white;
         }
 
-        public void changeToDaytmode()
+        public void ChangeToDaymode()
         {
                 BackColor = white;
                 checkBox1.ForeColor = black;
@@ -66,7 +66,7 @@ namespace clienth
                 label3.ForeColor = black;
         }
 
-        private void getMessage_sync()
+        private void GetMessage_sync()
         {
          stm = client.GetStream();
          int buffSize = client.ReceiveBufferSize;
@@ -99,10 +99,10 @@ namespace clienth
                 readList = getList;
             }
             readData = getMsg;
-         msg();
+         Msg();
         }
 
-        private void getMessage()
+        private void GetMessage()
         {
             while (true)
             {
@@ -143,13 +143,12 @@ namespace clienth
                 {
                     readData = "";
                 }
-                msg();            
+                Msg();            
              }
         }
-
-        private void button2_Click(object sender, EventArgs e)
-        {   
-            if(textBox3.Text!="")
+        private void Connect_btn_Click(object sender, EventArgs e)
+        {
+            if (textBox3.Text != "")
             {
                 client.Connect("127.0.0.1", 8880);
                 stm = client.GetStream();
@@ -158,7 +157,7 @@ namespace clienth
                 stm.Write(outStream, 0, outStream.Length);
                 stm.Flush();
 
-                getMessage_sync();
+                GetMessage_sync();
 
                 if (flag is true)
                 {
@@ -171,24 +170,24 @@ namespace clienth
                 }
                 else
                 {
-                    Thread ctThread = new Thread(getMessage);
+                    Thread ctThread = new Thread(GetMessage);
                     ctThread.Start();
                     ctThread.IsBackground = true;
                     textBox2.ReadOnly = false;
                     textBox3.ReadOnly = true;
                     idroom.ReadOnly = true;
                     label1.Text = "Twoj nick:";
-                    button2.Enabled = false;
-                    button1.Enabled = true;
+                    Connect_btn.Enabled = false;
+                    Send_btn.Enabled = true;
                 }
-            }            
+            }
         }
 
-        private void msg()
+        private void Msg()
         {
 
             if (this.InvokeRequired)
-                this.Invoke(new MethodInvoker(msg));
+                this.Invoke(new MethodInvoker(Msg));
             else
             {
                 if (readData == "")
@@ -203,7 +202,7 @@ namespace clienth
             }
         }
 
-        private void sendmsg()
+        private void Sendmsg()
         {
             if (textBox2.Text != "")
             {
@@ -225,12 +224,14 @@ namespace clienth
             CheckBox check = sender as CheckBox;
             if(check.Checked)
             {
-                changeToNightmode();
+                ChangeToNightmode();
             }
             else
             {
-                changeToDaytmode();
+                ChangeToDaymode();
             }
         }
+
+       
     }
 }
