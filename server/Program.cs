@@ -9,11 +9,19 @@ using System.ComponentModel;
 
 namespace server
 {
+    /// <summary>
+    /// Klasa odpowiadajaca za interakcje po stronie serwera.
+    /// </summary>
     class Program
     {
         public static Hashtable clientsList = new Hashtable();
         public static Hashtable roomList = new Hashtable();
         public static bool flag;
+
+        /// <summary>
+        /// Metoda Main w ktorej serwer nasluchuje klientow po czym dodaje ich do listy.
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             IPAddress ip = IPAddress.Parse("127.0.0.1");
@@ -72,6 +80,13 @@ namespace server
 
         }
 
+        /// <summary>
+        /// Metoda ktora rozsyla wiadomosci do klientow.
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="uName"></param>
+        /// <param name="IdRoom"></param>
+        /// <param name="flag_1"></param>
         public static void broadcast(string msg, string uName, string IdRoom, bool flag_1)
         {
             foreach (DictionaryEntry Item in clientsList)
@@ -108,7 +123,9 @@ namespace server
         }
     }
 
-
+    /// <summary>
+    /// Klasa odpowiadajaca za odbieranie wiadomosci od klientow.
+    /// </summary>
     public class HandleClinet
     {
         TcpClient clientSocket;
@@ -117,6 +134,13 @@ namespace server
         string IdRm;
         Thread ctThread;
 
+        /// <summary>
+        /// Metoda ktora przypisuje argumenty do pol oraz uruchamia watek ctThread.
+        /// </summary>
+        /// <param name="inClientSocket"></param>
+        /// <param name="clineNo"></param>
+        /// <param name="cList"></param>
+        /// <param name="IdRoom"></param>
         public void StartClient(TcpClient inClientSocket, string clineNo, Hashtable cList, string IdRoom)
         {
             this.clientSocket = inClientSocket;
@@ -127,6 +151,9 @@ namespace server
             ctThread.Start();
         }
 
+        /// <summary>
+        /// Metoda ktora odbiera wiadomosci od klientow po czym wysyla do metody broadcast.
+        /// </summary>
         private void Chat()
         {
             while ((true))

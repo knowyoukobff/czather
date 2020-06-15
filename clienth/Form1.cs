@@ -7,6 +7,9 @@ using System.Drawing;
 
 namespace clienth
 {
+    /// <summary>
+    /// Klasa odpowiadająca za interakcje uzytkownika w oknie klienta.
+    /// </summary>
     public partial class Form : System.Windows.Forms.Form
     {
         TcpClient client = new TcpClient();
@@ -21,16 +24,29 @@ namespace clienth
         public Color white = Color.FromArgb(255, 255, 255);
         public Color grey = Color.FromArgb(105, 105, 105);
 
+        /// <summary>
+        /// Konstruktor klasy, ktory inicjalizuje komponenty.
+        /// </summary>
         public Form()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Metoda ktora uruchamia metode Sendmsg().
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Send_btn_Click(object sender, EventArgs e)
         {
             Sendmsg();
         }
 
+        /// <summary>
+        /// Metoda ktora uruchamia metode Sendmsg() za pomoca klawisza Enter.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == (char)Keys.Enter)
@@ -40,6 +56,9 @@ namespace clienth
             }       
         }
 
+        /// <summary>
+        /// Metoda ktora zmienia wyglad aplikacji na tryb nocny.
+        /// </summary>
         public void ChangeToNightmode()
         {
                 BackColor = black;
@@ -53,6 +72,9 @@ namespace clienth
                 label3.ForeColor = white;
         }
 
+        /// <summary>
+        /// Metoda ktora zmienia wyglad aplikacji na tryb dnia.
+        /// </summary>
         public void ChangeToDaymode()
         {
                 BackColor = white;
@@ -66,6 +88,9 @@ namespace clienth
                 label3.ForeColor = black;
         }
 
+        /// <summary>
+        /// Metoda ktora dziala jak GetMessage tylko w trybie synchronicznym.
+        /// </summary>
         private void GetMessage_sync()
         {
          stm = client.GetStream();
@@ -86,22 +111,29 @@ namespace clienth
          getMsg = getMsg.Substring(0, getMsg.IndexOf("$"));
          getList = getList.Substring(getList.LastIndexOf("$"));
          getList = getList.TrimStart('$');
-            if (getMsg == "Ten nick jest zajety")
+
+         if (getMsg == "Ten nick jest zajety")
          {
             flag = true;
          }
+
          else
          {
             textBox1.Text = "Polaczony z serwerem";
          }
+
          if(readList!= getList)
-            {
-                readList = getList;
-            }
-            readData = getMsg;
+         {
+            readList = getList;
+         }
+
+         readData = getMsg;
          Msg();
         }
 
+        /// <summary>
+        /// Metoda ktora pobiera wiadomosci z serwera i wysyla do metody Msg().
+        /// </summary>
         private void GetMessage()
         {
             while (true)
@@ -146,6 +178,12 @@ namespace clienth
                 Msg();            
              }
         }
+
+        /// <summary>
+        /// Metoda ktora laczy klienta z serwerem po czym uruchamia watek ctThread.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Connect_btn_Click(object sender, EventArgs e)
         {
             if (textBox3.Text != "")
@@ -183,6 +221,9 @@ namespace clienth
             }
         }
 
+        /// <summary>
+        /// Metoda ktora zapisuje wiadomosci odebrane od serwera do textBoxa.
+        /// </summary>
         private void Msg()
         {
 
@@ -202,6 +243,9 @@ namespace clienth
             }
         }
 
+        /// <summary>
+        /// Metoda ktora wysyla wiadomosci do serwera.
+        /// </summary>
         private void Sendmsg()
         {
             if (textBox2.Text != "")
@@ -213,12 +257,22 @@ namespace clienth
             }
         }
 
+        /// <summary>
+        /// Metoda ktora przewija textBox na sam dol po kazdej wiadomosci z serwera.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
                 textBox1.SelectionStart = textBox1.Text.Length;
                 textBox1.ScrollToCaret();
         }
 
+        /// <summary>
+        /// Metoda ktora uruchamia Tryb Nocny.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             CheckBox check = sender as CheckBox;
